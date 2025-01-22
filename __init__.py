@@ -79,3 +79,12 @@ def enregistrer_client():
                                                                                                                                        
 if __name__ == "__main__":
   app.run(debug=True) 
+
+@app.route('/fiche_nom/')
+def ReadBDD_2():
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM clients;')
+    data = cursor.fetchall()
+    conn.close()
+    return render_template('search_data.html', data=data)
