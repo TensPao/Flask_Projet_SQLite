@@ -16,7 +16,7 @@ def est_authentifie():
 def hello_world():
     return render_template('hello.html')
 
-@app.route('/lecture')
+@app.route('/lecture') 
 def lecture():
     if not est_authentifie():
         # Rediriger vers la page d'authentification si l'utilisateur n'est pas authentifié
