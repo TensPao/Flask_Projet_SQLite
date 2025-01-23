@@ -2,7 +2,7 @@
 import sqlite3
 
 # Connexion à la base SQLite
-connection = sqlite3.connect('database.db')
+connection = sqlite3.connect('database2.db')
 
 # Création du schéma de la base de données
 connection.executescript('''
