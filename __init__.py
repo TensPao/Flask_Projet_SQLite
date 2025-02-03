@@ -70,24 +70,24 @@ def accueil_admin():
             auteur = request.form['auteur']
             annee = request.form['annee']
             quantite = request.form['quantite']
-            cursor.execute('INSERT INTO Livres (Titre, Auteur, Annee_publication, Quantite) VALUES (?, ?, ?, ?)', 
+            cursor.execute('INSERT INTO livres (Titre, Auteur, Annee_publication, Quantite) VALUES (?, ?, ?, ?)', 
                            (titre, auteur, annee, quantite))
             conn.commit()
 
         # Supprimer un livre
         if 'supprimer_livre' in request.form:
             livre_id = request.form['livre_id']
-            cursor.execute('DELETE FROM Livres WHERE ID_livre = ?', (livre_id,))
+            cursor.execute('DELETE FROM livres WHERE ID_livre = ?', (livre_id,))
             conn.commit()
 
         # Ajouter au stock
         if 'ajouter_stock' in request.form:
             livre_id = request.form['livre_id']
             quantite_ajoutee = request.form['quantite']
-            cursor.execute('UPDATE Livres SET Quantite = Quantite + ? WHERE ID_livre = ?', (quantite_ajoutee, livre_id))
+            cursor.execute('UPDATE livres SET Quantite = Quantite + ? WHERE ID_livre = ?', (quantite_ajoutee, livre_id))
             conn.commit()
 
-    cursor.execute('SELECT * FROM Livres')
+    cursor.execute('SELECT * FROM livres')
     livres = cursor.fetchall()
     conn.close()
 
@@ -106,10 +106,10 @@ def user_home():
         # Emprunter un livre
         if 'emprunter' in request.form:
             livre_id = request.form['livre_id']
-            cursor.execute('SELECT Quantite FROM Livres WHERE ID_livre = ?', (livre_id,))
+            cursor.execute('SELECT Quantite FROM livres WHERE ID_livre = ?', (livre_id,))
             livre = cursor.fetchone()
             if livre and livre[0] > 0:
-                cursor.execute('UPDATE Livres SET Quantite = Quantite - 1 WHERE ID_livre = ?', (livre_id,))
+                cursor.execute('UPDATE livres SET Quantite = Quantite - 1 WHERE ID_livre = ?', (livre_id,))
                 cursor.execute('INSERT INTO Emprunts (ID_utilisateur, ID_livre) VALUES (?, ?)', 
                                (session['utilisateur_id'], livre_id))
                 conn.commit()
@@ -126,14 +126,14 @@ def user_home():
                 conn.commit()
 
     # Récupérer la liste des livres disponibles
-    cursor.execute('SELECT * FROM Livres')
+    cursor.execute('SELECT * FROM livres')
     livres = cursor.fetchall()
 
     # Récupérer les emprunts en cours de l'utilisateur
     cursor.execute('''
         SELECT E.ID_emprunt, L.Titre, L.Auteur, E.Date_emprunt, E.Statut
         FROM Emprunts E
-        JOIN Livres L ON E.ID_livre = L.ID_livre
+        JOIN livres L ON E.ID_livre = L.ID_livre
         WHERE E.ID_utilisateur = ? AND E.Statut = "Actif"
     ''', (session['utilisateur_id'],))
     emprunts = cursor.fetchall()
@@ -154,7 +154,7 @@ def voir_emprunts():
     cursor.execute(''' 
         SELECT E.ID_emprunt, E.ID_utilisateur, L.Titre, L.Auteur, E.Date_emprunt, E.Date_retour, E.Statut
         FROM Emprunts E
-        JOIN Livres L ON E.ID_livre = L.ID_livre
+        JOIN livres L ON E.ID_livre = L.ID_livre
         WHERE E.Statut != "Terminé"
     ''')
     emprunts = cursor.fetchall()
